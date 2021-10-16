@@ -1,0 +1,140 @@
+#I will start first by correcting the solution submited by Kryptoenix and i will provide a 'complete' solution
+#to this challenge...
+
+#lets fire gdb and see what this challenge has for us !
+
+$gdb linux_64_bit
+.
+.
+.
+
+$run 123456
+.
+.
+.
+access denied, wrong password, try again
+
+$info functions
+0x00005555554005f8  _init
+0x0000555555400620  puts@plt
+0x0000555555400630  strlen@plt
+0x0000555555400640  printf@plt
+0x0000555555400650  atoi@plt
+0x0000555555400660  sqrt@plt
+0x0000555555400670  __cxa_finalize@plt
+0x0000555555400680  _start
+0x00005555554006b0  deregister_tm_clones
+0x00005555554006f0  register_tm_clones
+0x0000555555400740  __do_global_dtors_aux
+0x0000555555400780  frame_dummy
+0x000055555540078a  main
+0x00005555554007f5  check_pass
+0x0000555555400867  is_prime
+0x00005555554008d0  __libc_csu_init
+0x0000555555400940  __libc_csu_fini
+0x0000555555400944  _fini
+0x00007ffff7fd3010  _dl_catch_exception@plt
+0x00007ffff7fd3020  malloc@plt
+.
+.
+.
+#the function check_pass looks intersting , lets disassemble it
+#lets set dis syntaxe to intel (just a matter of taste )
+$ set disassembly-flavor intel
+$disassemble check_pass
+
+   0x00005555554007f5 <+0>:	    push   rbp
+   0x00005555554007f6 <+1>:	    mov    rbp,rsp
+   0x00005555554007f9 <+4>:	    sub    rsp,0x20
+   0x00005555554007fd <+8>:	    mov    DWORD PTR [rbp-0x14],edi
+   0x0000555555400800 <+11>:	mov    QWORD PTR [rbp-0x20],rsi
+   0x0000555555400804 <+15>:	cmp    DWORD PTR [rbp-0x14],0x2
+   0x0000555555400808 <+19>:	jne    0x555555400860 <check_pass+107>
+   0x000055555540080a <+21>:	mov    rax,QWORD PTR [rbp-0x20]
+   0x000055555540080e <+25>:	mov    rdi,rax
+   0x0000555555400811 <+28>:	call   0x555555400630 <strlen@plt>
+   0x0000555555400816 <+33>:	mov    DWORD PTR [rbp-0x8],eax
+   0x0000555555400819 <+36>:	mov    rax,QWORD PTR [rbp-0x20]
+   0x000055555540081d <+40>:	mov    rdi,rax
+   0x0000555555400820 <+43>:	call   0x555555400650 <atoi@plt>
+   0x0000555555400825 <+48>:	mov    DWORD PTR [rbp-0x4],eax
+   0x0000555555400828 <+51>:	mov    ecx,DWORD PTR [rbp-0x8]
+   0x000055555540082b <+54>:	mov    edx,0x55555556
+   0x0000555555400830 <+59>:	mov    eax,ecx
+   0x0000555555400832 <+61>:	imul   edx
+   0x0000555555400834 <+63>:	mov    eax,ecx
+   0x0000555555400836 <+65>:	sar    eax,0x1f
+   0x0000555555400839 <+68>:	sub    edx,eax
+   0x000055555540083b <+70>:	mov    eax,edx
+   0x000055555540083d <+72>:	mov    edx,eax
+   0x000055555540083f <+74>:	add    edx,edx
+   0x0000555555400841 <+76>:	add    edx,eax
+   0x0000555555400843 <+78>:	mov    eax,ecx
+   0x0000555555400845 <+80>:	sub    eax,edx
+   0x0000555555400847 <+82>:	test   eax,eax
+   0x0000555555400849 <+84>:	jne    0x555555400860 <check_pass+107>
+   0x000055555540084b <+86>:	mov    eax,DWORD PTR [rbp-0x4]
+   0x000055555540084e <+89>:	mov    edi,eax
+   0x0000555555400850 <+91>:	call   0x555555400867 <is_prime>
+   0x0000555555400855 <+96>:	test   eax,eax
+   0x0000555555400857 <+98>:	je     0x555555400860 <check_pass+107>
+   0x0000555555400859 <+100>:	mov    eax,0x1
+   0x000055555540085e <+105>:	jmp    0x555555400865 <check_pass+112>
+   0x0000555555400860 <+107>:	mov    eax,0x0
+   0x0000555555400865 <+112>:	leave  
+   0x0000555555400866 <+113>:	ret  
+
+#the code above does the following things:
+1-checks the number of program arguments , if the number of arguments is less than 2 the program will exit
+   0x00005555554007fd <+8>:	    mov    DWORD PTR [rbp-0x14],edi
+   0x0000555555400800 <+11>:	mov    QWORD PTR [rbp-0x20],rsi
+   0x0000555555400804 <+15>:	cmp    DWORD PTR [rbp-0x14],0x2
+   0x0000555555400808 <+19>:	jne    0x555555400860 <check_pass+107>
+
+2- calculates the argument string supplied to the program
+   0x000055555540080a <+21>:	mov    rax,QWORD PTR [rbp-0x20]
+   0x000055555540080e <+25>:	mov    rdi,rax
+   0x0000555555400811 <+28>:	call   0x555555400630 <strlen@plt>
+3- convert the string (number) to integer 
+   0x0000555555400816 <+33>:	mov    DWORD PTR [rbp-0x8],eax
+   0x0000555555400819 <+36>:	mov    rax,QWORD PTR [rbp-0x20]
+   0x000055555540081d <+40>:	mov    rdi,rax
+   0x0000555555400820 <+43>:	call   0x555555400650 <atoi@plt>
+   
+4- checks if the lenght of the number supplied is a multiple of 3 , which means 
+   that a correct key will have a length of : 3, 6, 9, 12, 15, 18, 21, 24, 27, 30 ...(not only numbers with a length of 3 as  stated by user Kryptoenix)
+
+   0x0000555555400816 <+33>:	mov    DWORD PTR [rbp-0x8],eax
+   0x0000555555400819 <+36>:	mov    rax,QWORD PTR [rbp-0x20]
+   0x000055555540081d <+40>:	mov    rdi,rax
+   0x0000555555400820 <+43>:	call   0x555555400650 <atoi@plt>
+   0x0000555555400825 <+48>:	mov    DWORD PTR [rbp-0x4],eax
+   0x0000555555400828 <+51>:	mov    ecx,DWORD PTR [rbp-0x8]
+   0x000055555540082b <+54>:	mov    edx,0x55555556
+   0x0000555555400830 <+59>:	mov    eax,ecx
+   0x0000555555400832 <+61>:	imul   edx
+   0x0000555555400834 <+63>:	mov    eax,ecx
+   0x0000555555400836 <+65>:	sar    eax,0x1f
+   0x0000555555400839 <+68>:	sub    edx,eax
+   0x000055555540083b <+70>:	mov    eax,edx
+   0x000055555540083d <+72>:	mov    edx,eax
+   0x000055555540083f <+74>:	add    edx,edx
+   0x0000555555400841 <+76>:	add    edx,eax
+   0x0000555555400843 <+78>:	mov    eax,ecx
+   0x0000555555400845 <+80>:	sub    eax,edx
+   0x0000555555400847 <+82>:	test   eax,eax
+   0x0000555555400849 <+84>:	jne    0x555555400860 <check_pass+107>
+   
+5- check if the number is a prime number
+   0x000055555540084b <+86>:	mov    eax,DWORD PTR [rbp-0x4]
+   0x000055555540084e <+89>:	mov    edi,eax
+   0x0000555555400850 <+91>:	call   0x555555400867 <is_prime>
+   0x0000555555400855 <+96>:	test   eax,eax
+   0x0000555555400857 <+98>:	je     0x555555400860 <check_pass+107>
+   
+#if all conditions are met the correct flag will be returned as flag{number}
+
+#a python solution to this challenge is provided (keygen.py)
+
+#kudos to the creator of this challenge 
+   
