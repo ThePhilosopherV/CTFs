@@ -1,0 +1,48 @@
+#lets disassemble the program and analyse the important parts of the code
+
+_______________________________________ 
+loc_402181:
+                call    _getch
+                cmp     al, 0Dh
+                mov     [esp+esi+0A2h], al
+                jnz     short loc_402160
+loc_402160:
+                lea     edx, [esi+3]
+                xor     dl, ds:400000h
+                add     esi, 1
+                xor     eax, edx
+                mov     [esp+esi+0A1h], al
+                mov     dword ptr [esp], 2Ah ; int
+                call    putchar
+
+#we can see here  that when we enter a key it will be transformed using the following algorithm
+
+  [ C(n) xor  dl  xor 0x4d ]  where C(n) is the key character with index n ;and dl=3 and its 
+  increased by one with each character.
+  
+_______________________________________  
+loc_4023E3:
+                movsx   esi, byte ptr [eax]
+                add     eax, 1
+                imul    esi, edx
+                add     edx, 0FFFFh
+                add     edi, esi
+                cmp     edx, 0CFFF3h
+                jnz     short loc_4023E3
+                
+                
+
+#here we notice that the transformed key is being processed using the following algorithm:
+
+    sum += charCode(c(k)) * 0xffff * n  where n is a number between 0 and 12 (12 included)
+                                        and charCode(c(k)) is the ascii code of the transformed character in index k
+                                        this algorithm will be repeated 13 times 
+                                        
+_______________________________________                                        
+cmp     ecx, edi
+mov     [esp], ebx
+jz      short loc_402412
+
+#here the sum value will be compared to 0x931F6CE  if true it means we have the correct key
+#a keygen.py is provided to get random working keys
+                                        
