@@ -1,5 +1,4 @@
-#I will start first by correcting the solution submited by Kryptoenix and i will provide a 'complete' solution
-#to this challenge...
+
 
 #lets fire gdb and see what this challenge has for us !
 
@@ -102,7 +101,7 @@ $disassemble check_pass
    0x0000555555400820 <+43>:	call   0x555555400650 <atoi@plt>
    
 4- checks if the lenght of the number supplied is a multiple of 3 , which means 
-   that a correct key will have a length of : 3, 6, 9, 12, 15, 18, 21, 24, 27, 30 ...(not only numbers with a length of 3 as  stated by user Kryptoenix)
+   that a correct key will have a length of : 3, 6, 9, 12, 15, 18, 21, 24, 27, 30 ...
 
    0x0000555555400816 <+33>:	mov    DWORD PTR [rbp-0x8],eax
    0x0000555555400819 <+36>:	mov    rax,QWORD PTR [rbp-0x20]
