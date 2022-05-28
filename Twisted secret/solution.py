@@ -1,6 +1,6 @@
 #the following program does three things:
 #First : getting the first 624 random values by Xoring 'flag.jpg.enc' with 'flag.jpg.partial'
-#Second : generating the next random values and stores and them in a file 
+#Second : generating the next random values and stores them in a file 
 #Third : Xor the random values stored previously in a file with the 'flag.jpg.enc' file to get the flag.jpg file
 import random
 from mt19937predictor import MT19937Predictor #importing the Mersenne Twister predictor class  
