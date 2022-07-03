@@ -1,6 +1,6 @@
 import random,string
 
-letters = string.ascii_lowercase 
+letters = string.ascii_lowercase #lower case characters gave quick results
 
 while 1:
     key =  ''.join(random.choice(letters) for i in range(15))
@@ -18,10 +18,10 @@ while 1:
             if eax == -2912:
                 key1=key
                 while 1:
-                    letters = string.ascii_lowercase
+                    letters = string.ascii_lowercase #lower case characters gave quick results
                     
                     key =  ''.join(random.choice(letters) for i in range(3))
-                    key="vla"+key
+                    key="vla"+key #after many tries i noticed that prefixing keys with the word "vla" gave super fast results
                 
                     eax=ord(key[0])
                     var_2c = eax
