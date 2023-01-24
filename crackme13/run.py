@@ -9,21 +9,18 @@ for c in data:
         a= i ^ 0x54
         a=rol(a,2,8)
         a=a+0xeb
-        a = int('0x'+hex(int(str( a )))[-2:],16)
         a=a^0x24
-
 
         a=a^0x54
         a=rol(a,2,8)
         a=a^0x24
         a=a^0x54
         
-        
         a=a^0x24
         a=a^0x54
         a=rol(a,2,8)
         a=a^0x24
-
+        
         a=rol(a,2,8)
         a+=0xeb
         a=a^0x24
